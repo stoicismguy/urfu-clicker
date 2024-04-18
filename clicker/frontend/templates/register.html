@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div style="display: flex; align-items: center; flex-direction: column; padding-top: 150px;">
+        <h1>Register</h1>
+        <form method="POST">  
+            {{ form }}
+            {% csrf_token %}
+            <button type="submit" class="login_button">Register</button>
+        </form>
+        <p class="no_acc">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+</body>
+<style>
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .login_button {
+        padding: 10px;
+        border-radius: 20px;
+        border: 2px rgb(59, 0, 155) solid;
+        background-color: rgb(127, 75, 248);
+        text-transform: uppercase;
+        color: white;
+        font-weight: 700;
+    }
+    .login_button:hover {
+        background-color: rgb(59, 0, 155);
+    }
+    a {
+        text-decoration: none;
+        color: rgb(59, 0, 155);
+        font-weight: 700;
+    }
+    .no_acc {
+        font-size: 16px;
+        font-weight: 500;
+    }
+</style>
+</html>

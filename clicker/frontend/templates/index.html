@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+    <title>Clicker</title>
+</head>
+<body>
+    <div style="display: grid; gap: 15px; grid-template-columns: 1fr 1fr; margin-top: 25px;">
+        <div style="display: flex; justify-content: space-between;">
+            <img src="{% static 'ronnie.png' %}" id="img" width="80%" style="margin: 0 auto;">
+        </div>
+        <div>
+            <div style="display: flex; gap: 100px;"><h1 id="coins">Coins: {{coins}}</h1><h1 id="power">Power: {{power}}</h1></div>
+            <div>
+                <p>boost</p>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'clicker.js' %}"></script>
+</body>
+</html>
