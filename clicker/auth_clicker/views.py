@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http.response import HttpResponse
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login, logout
+
 from backend.models import Core
 from django.contrib.auth.models import User
 from .forms import UserForm
@@ -51,3 +52,8 @@ class RegisterView(APIView):
             
         form = UserForm()
         return render(request, "register.html", {"form": form})
+    
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
