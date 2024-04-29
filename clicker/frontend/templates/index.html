@@ -20,7 +20,14 @@
         <div>
             <div style="display: flex; gap: 100px;"><h1 id="coins">Coins: {{coins}}</h1><h1 id="power">Power: {{power}}</h1></div>
             <div>
+                {% for boost in boosts %}
                 <div class="booster">
+                    <p>+{{boost.power}} power</p>
+                    <p id="{{boost.number}}">{{boost.price}} coins</p>
+                    <button class="buy" number="{{boost.number}}" link="{% url 'boost' %}">Buy</button>
+                </div>
+                {% endfor %}
+                <!-- <div class="booster">
                     <p>+1 power</p>
                     <p>150 coins</p>
                     <button class="buy" power="1" price="150" link="{% url 'boost' %}">Buy</button>
@@ -34,7 +41,7 @@
                     <p>+10 power</p>
                     <p>1300 coins</p>
                     <button class="buy" power="10" price="1300" link="{% url 'boost' %}">Buy</button>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

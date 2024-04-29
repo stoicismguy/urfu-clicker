@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from .models import Core
+from .models import Core, Boost
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import CoreSerializer
+from .serializers import CoreSerializer, BoostSerializer
 
 
 # Create your views here.
@@ -16,14 +16,13 @@ def call_click(request):
 @api_view(['POST'])
 def get_boost(request):
     print(request.POST)
-    price = int(request.POST.get("price"))
-    power = int(request.POST.get("power"))
+    number = int(request.POST.get("number"))
     core = Core.objects.get(user=request.user)
-    if core.coins >= price:
-        core.coins -= price
-        core.click_power += power
-        core.save()
-        return Response({"status": "good", "core": CoreSerializer(core).data})
-    return Response({"status": "bad"})
+    booster = Boost.objects.get(core=core, number=number)
+    use = booster.use_boost()
+    core.refresh_from_db()
+
+    return Response({"status": use, "core": CoreSerializer(core).data, "boost": BoostSerializer(booster).data})
+
     
 

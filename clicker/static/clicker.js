@@ -11,10 +11,13 @@ buttons = document.getElementsByClassName("buy");
 Array.from(buttons).forEach((element) => {
     element.onclick = function (e) {
         btn = e.target;
-        power = parseInt(btn.getAttribute("power"));
-        price = parseInt(btn.getAttribute("price"));
+        btn.parentElement.style.backgroundColor = "#7f4bf8";
+        number = parseInt(btn.getAttribute("number"));
         link = btn.getAttribute("link");
-        get_booster(power, price, link);
+        get_booster(power, number);
+        setTimeout(function () {
+            btn.parentElement.style.backgroundColor = "";
+        }, 100);
     };
 });
 
@@ -32,11 +35,12 @@ function call_click() {
 }
 
 
-function get_booster(power, price, link) {
+
+//то же самое что через фетч, но я не смог дату отправить, так что через ajax сделал
+function get_booster(power, number) {
     token = document.getElementsByName("csrfmiddlewaretoken")[0].getAttribute('value');
     ajax_data = {}
-    ajax_data["power"] = power;
-    ajax_data["price"] = price;
+    ajax_data["number"] = number;
     ajax_data["csrfmiddlewaretoken"] = token;
     $.ajax({
         type: "POST",
@@ -47,8 +51,10 @@ function get_booster(power, price, link) {
                 alert("Not enough money!")
             }
             else {
+                // console.log(request);
                 document.getElementById("coins").innerText = `Coins: ${request.core.coins}`
                 document.getElementById("power").innerText = `Power: ${request.core.click_power}`
+                document.getElementById(number).textContent = `${request.boost.price} coins`
             }        
         },
         error: function (response) {

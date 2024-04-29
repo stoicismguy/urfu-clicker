@@ -3,7 +3,7 @@ from django.http.response import HttpResponse
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login, logout
 
-from backend.models import Core
+from backend.models import Core, Boost
 from django.contrib.auth.models import User
 from .forms import UserForm
 
@@ -43,6 +43,9 @@ class RegisterView(APIView):
                 user = User.objects.create_user(username, '', password)
                 user.save()
                 core = Core.objects.create(user=user)
+                boost1 = Boost.objects.create(number=1,core=core,power=1,price=150).save()
+                boost2 = Boost.objects.create(number=2,core=core,power=5,price=650).save()
+                boost3 = Boost.objects.create(number=3,core=core,power=10,price=1300).save()
                 core.save()
                 user = authenticate(request,
                                     username=username,
