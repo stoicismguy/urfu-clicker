@@ -5,65 +5,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
     <title>Clicker</title>
 </head>
 <body>
     {% csrf_token %}
     <header>
         <h1>Привет, {{username}}</h1>
+        <h1>Прокачай своего Ронни Коулмана!</h1>
         <a href="{% url 'logout' %}">Logout</a>
     </header>
     <div style="display: grid; gap: 15px; grid-template-columns: 1fr 1fr; margin-top: 25px;">
-        <div style="display: flex; justify-content: space-between;">
+        <div style="display: flex; justify-content: space-between; flex-direction: column;">
             <img src="{% static 'ronnie.png' %}" id="img" width="80%" style="margin: 0 auto;">
         </div>
-        <div>
-            <div style="display: flex; gap: 100px;"><h1 id="coins">Coins: {{coins}}</h1><h1 id="power">Power: {{power}}</h1></div>
+        <div style="padding-right: 15px;">
+            <!-- <div style="display: flex; gap: 100px;"><h1 id="coins">Потянул кг: {{coins}}</h1><h1 id="power">Вес штанги: {{power}}</h1><h1 id="auto">Авто-подъем: 0 кг в сек</h1></div> -->
+            <div style="display: flex; justify-content: space-between;"><h1>Потянул кг: <span id="coins">{{coins}}</span></h1><h1>Штанга: <span id="power">{{power}}</span> кг</h1><h1>Авто-подъем: <span id="auto">{{autoclick_power}}</span> кг в мин</h1></div>
             <div>
                 {% for boost in boosts %}
-                <div class="booster">
-                    <p>+{{boost.power}} power</p>
-                    <p id="{{boost.number}}">{{boost.price}} coins</p>
-                    <button class="buy" number="{{boost.number}}" link="{% url 'boost' %}">Buy</button>
+                <div class="boost booster" link="{% url 'boost' %}" number="{{boost.number}}">
+                    <p name="name">{{boost.name}}</p>
+                    <p >+<span name="power">{{boost.power}}</span>кг к весу</p>
+                    <p><span name="price">{{boost.price}}</span> кг</p>
+                    <!-- <button class="buy" number="{{boost.number}}" link="{% url 'boost' %}">Buy</button> -->
                 </div>
                 {% endfor %}
-                <!-- <div class="booster">
-                    <p>+1 power</p>
-                    <p>150 coins</p>
-                    <button class="buy" power="1" price="150" link="{% url 'boost' %}">Buy</button>
+            </div>
+            <h1>Авто-подъемы</h1>
+            <div style="display: flex; gap: 20px;">
+                {% for autoboost in autoboosts %}
+                <div class="boost autobooster" number="{{autoboost.number}}" link="{% url 'autoboost' %}">
+                    <p>{{autoboost.name}}</p>
+                    <p>+<span name="power">{{autoboost.power}}</span> кг/час</p>
+                    <p><span name="price">{{autoboost.price}}</span> кг</p>
                 </div>
-                <div class="booster">
-                    <p>+5 power</p>
-                    <p>650 coins</p>
-                    <button class="buy" power="5" price="650" link="{% url 'boost' %}">Buy</button>
-                </div>
-                <div class="booster">
-                    <p>+10 power</p>
-                    <p>1300 coins</p>
-                    <button class="buy" power="10" price="1300" link="{% url 'boost' %}">Buy</button>
-                </div> -->
+                {% endfor %}
             </div>
         </div>
     </div>
+    <script>
+        core_data_link = {% url 'core_info' %};
+        click_data_url = {% url 'send_click_data' %}
+        set_coins_url = {% url 'set_coins' %}
+    </script>
     <script src="{% static 'clicker.js' %}"></script>
     <style>
+        body {
+            margin: 0;
+            background-color: rgba(48, 48, 48, 0.55);
+            font-family: "Advent Pro", sans-serif;
+        }
         header {
             display: flex;
             justify-content: space-between;
-            padding: 0 15px;
+            padding: 0 25px;
             align-items: center;
+            background-color: #303030;
+            color: #fefefe;
+            font-family: "Advent Pro", sans-serif;
+            height: 65px;
+        }
+        header a {
+            color: #fefefe;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .boost > *{
+            pointer-events:none;
         }
         .booster {
-            background-color: rgb(255, 255, 255);
+            background-color: none;
             display: flex;
             justify-content: space-between;
-            padding: 10px 20px;
+            align-items: center;
+            padding: 10px 35px;
             border-radius: 20px;
             border: 2px black solid;
             font-size: 20px;
             margin-bottom: 15px;
+            cursor: pointer;
         }
-
+        .booster p {
+            font-size: 25px;
+            margin: 0;
+        }
         .buy {
             padding: 10px 30px;
             border-radius: 15px;
@@ -73,9 +102,24 @@
             text-transform: uppercase;
             color: white;
             font-weight: 700;  
+            cursor: pointer;
         }
         .buy:hover {
             background-color: rgb(59, 0, 155);
+        }
+        .autobooster {
+            border-radius: 20px;
+            border: 2px black solid;
+            padding: 10px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+            align-items: center;
+            cursor: pointer;
+        }
+        .autobooster p {
+            font-size: 25px;
+            margin: 0;         
         }
     </style>
 </body>

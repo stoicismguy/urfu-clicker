@@ -5,7 +5,7 @@ from .models import Core, Boost
 class CoreSerializer(ModelSerializer):
     class Meta:
         model = Core
-        fields = ['coins', 'click_power']
+        fields = ['coins', 'click_power', 'autoclick_power']
 
 
 class BoostSerializer(ModelSerializer):

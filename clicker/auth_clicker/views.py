@@ -3,7 +3,7 @@ from django.http.response import HttpResponse
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login, logout
 
-from backend.models import Core, Boost
+from backend.models import Core, Boost, AutoBoost
 from django.contrib.auth.models import User
 from .forms import UserForm
 
@@ -43,9 +43,8 @@ class RegisterView(APIView):
                 user = User.objects.create_user(username, '', password)
                 user.save()
                 core = Core.objects.create(user=user)
-                boost1 = Boost.objects.create(number=1,core=core,power=1,price=150).save()
-                boost2 = Boost.objects.create(number=2,core=core,power=5,price=650).save()
-                boost3 = Boost.objects.create(number=3,core=core,power=10,price=1300).save()
+                create_all_boosters(core)
+                
                 core.save()
                 user = authenticate(request,
                                     username=username,
@@ -55,6 +54,19 @@ class RegisterView(APIView):
             
         form = UserForm()
         return render(request, "register.html", {"form": form})
+    
+
+def create_all_boosters(core):
+    Boost.objects.create(name="Тестостерон", number=1,core=core,power=1,price=150).save()
+    Boost.objects.create(name="Дека", number=2,core=core,power=5,price=650).save()
+    Boost.objects.create(name="Метан", number=3,core=core,power=10,price=1300).save()
+    Boost.objects.create(name="Сустанон", number=4,core=core,power=25,price=3000).save()
+    Boost.objects.create(name="Дианабол", number=5,core=core,power=50,price=5500).save() 
+
+    AutoBoost.objects.create(name="Читинг", number=1, core=core, power=10, price=400)       
+    AutoBoost.objects.create(name="Креатин", number=2, core=core, power=40, price=1000)       
+    AutoBoost.objects.create(name="Протеин", number=3, core=core, power=100, price=2100)       
+
     
 
 def logout_view(request):

@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
     <title>Register</title>
 </head>
 <body>
@@ -10,18 +13,27 @@
     <div style="display: flex; align-items: center; flex-direction: column; padding-top: 150px;">
         <h1>Register</h1>
         <form method="POST">  
-            {{ form }}
+            {{ form.as_p }}
             {% csrf_token %}
             <button type="submit" class="login_button">Register</button>
         </form>
-        <p class="no_acc">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        <p class="no_acc" style="flex-direction: row;">Already have an account? <a href="{% url 'login' %}">Login</a></p>
     </div>
 </body>
 <style>
+    body {
+        margin: 0;
+        background-color: rgba(48, 48, 48, 0.55);
+        font-family: "Advent Pro", sans-serif;
+        font-weight: 500;
+        font-style: normal;
+        font-size: 20px;
+    }
     form {
         display: flex;
         flex-direction: column;
         gap: 15px;
+        min-width: 25%;
     }
     .login_button {
         padding: 10px;
@@ -43,6 +55,17 @@
     .no_acc {
         font-size: 16px;
         font-weight: 500;
+    }
+    input {
+        padding: 10px;
+        border-radius: 10px;
+        font-family: "Advent Pro", sans-serif;
+        font-size: 18px;
+    }
+    p {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
     }
 </style>
 </html>

@@ -1,4 +1,8 @@
 img = document.getElementById("img");
+global_core_data = null;
+global_click_counter = 0
+
+
 img.onclick = function (e) {
     img.parentElement.style.backgroundColor = "#7f4bf8";
     call_click()
@@ -7,37 +11,72 @@ img.onclick = function (e) {
     }, 100);
 }
 
-buttons = document.getElementsByClassName("buy");
-Array.from(buttons).forEach((element) => {
+$.ajax({
+    type: 'GET',
+    url: core_data_link,
+    success: function (request) {
+        global_core_data = request.core;
+        console.log(global_core_data)
+    }
+})
+
+
+boost_buttons = document.getElementsByClassName("boost");
+Array.from(boost_buttons).forEach((element) => {
     element.onclick = function (e) {
-        btn = e.target;
-        btn.parentElement.style.backgroundColor = "#7f4bf8";
-        number = parseInt(btn.getAttribute("number"));
-        link = btn.getAttribute("link");
-        get_booster(power, number);
+        var div = e.target;
+        div.style.backgroundColor = "#7f4bf8";
+        var number = parseInt(div.getAttribute("number"));
+        var link = div.getAttribute("link");
+        get_booster(number, link, div);
         setTimeout(function () {
-            btn.parentElement.style.backgroundColor = "";
+            div.style.backgroundColor = "";
         }, 100);
     };
 });
 
+
 function call_click() {
-    fetch('/call_click', {
-        method: "GET"
-    }).then(response => {
-        if (response.ok) {
-            return response.json()
+    let coins_p = document.getElementById("coins")
+    global_core_data.coins += global_core_data.click_power
+    coins_p.innerText = parseInt(coins_p.innerText) + global_core_data.click_power
+}
+
+setInterval(function () {
+    global_core_data.coins += (global_core_data.autoclick_power / 60);
+    let coins_p = document.getElementById("coins");
+    coins_p.innerText = parseInt(global_core_data.coins)
+}, 1000)
+
+
+setInterval(function () {
+    set_coins();
+}, 5000)
+
+function set_coins() {
+    let ajax_data = {}
+    ajax_data["csrfmiddlewaretoken"] = document.getElementsByName("csrfmiddlewaretoken")[0].getAttribute('value');
+    ajax_data['money'] = parseInt(global_core_data.coins);
+    $.ajax({
+        type: 'POST',
+        url: set_coins_url,
+        data: ajax_data,
+        success: function (request) {
+            render_core(request["core"]);
         }
-        return Promise.reject(response)
-    }).then(data => {
-        document.getElementById("coins").innerText = `Coins: ${data.core.coins}`
-    }).catch(error => console.log(error))
+    })
 }
 
 
+function render_core(core) {
+    global_core_data = core;
+    document.getElementById("coins").innerText = parseInt(core.coins);
+    document.getElementById("power").innerText = parseInt(core.click_power);
+    document.getElementById("auto").innerText = parseInt(core.autoclick_power);
+}
 
-//то же самое что через фетч, но я не смог дату отправить, так что через ajax сделал
-function get_booster(power, number) {
+
+function get_booster(number, link, div) {
     token = document.getElementsByName("csrfmiddlewaretoken")[0].getAttribute('value');
     ajax_data = {}
     ajax_data["number"] = number;
@@ -48,17 +87,21 @@ function get_booster(power, number) {
         data: ajax_data,
         success: function (request) {
             if (request.status == "bad") {
-                alert("Not enough money!")
+                let coins = document.getElementById("coins");
+                coins.style.color = "rgb(255, 0, 0)";
+                setInterval(function () {
+                    coins.style.color = "black";
+                }, 150)
             }
             else {
-                // console.log(request);
-                document.getElementById("coins").innerText = `Coins: ${request.core.coins}`
-                document.getElementById("power").innerText = `Power: ${request.core.click_power}`
-                document.getElementById(number).textContent = `${request.boost.price} coins`
+                div.querySelector('[name="power"]').innerText = request['boost'].power;
+                div.querySelector('[name="price"]').innerText = request['boost'].price;
+                render_core(request["core"]);
             }        
         },
         error: function (response) {
-            alert("WRONG!")
+            alert("WRONG!");
         }
     });
 }
+
